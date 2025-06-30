@@ -1,0 +1,285 @@
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2 text-primary">
+            <i class="bi bi-speedometer2"></i>
+            Dashboard
+        </h1>
+        <p class="text-muted">Overview of your GCP BoQ generation system</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">
+                            <i class="bi bi-folder"></i>
+                            Projects
+                        </h5>
+                        <h3 class="mb-0">{{stats.total_projects}}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-folder fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">
+                            <i class="bi bi-server"></i>
+                            Resources
+                        </h5>
+                        <h3 class="mb-0">{{stats.total_resources}}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-server fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">
+                            <i class="bi bi-calculator"></i>
+                            BoQ Calculations
+                        </h5>
+                        <h3 class="mb-0">{{stats.total_calculations}}</h3>
+                        <small class="opacity-75">Last 30 days</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calculator fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">
+                            <i class="bi bi-currency-dollar"></i>
+                            Total Cost
+                        </h5>
+                        <h3 class="mb-0">{{currency stats.total_cost}}</h3>
+                        <small class="text-muted">Last 30 days</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-currency-dollar fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource Overview -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bar-chart"></i>
+                    Resource Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Average vCPUs per Resource</label>
+                            <div class="h4 text-primary">{{round stats.avg_vcpu 1}}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Average Memory per Resource</label>
+                            <div class="h4 text-primary">{{round stats.avg_memory 1}} GB</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Total Regions</label>
+                            <div class="h4 text-primary">{{stats.total_regions}}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Spot/Preemptible Resources</label>
+                            <div class="h4 text-primary">{{stats.spot_resources}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-activity"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/calculate" class="btn btn-primary">
+                        <i class="bi bi-calculator"></i>
+                        Calculate New BoQ
+                    </a>
+                    <a href="/resources" class="btn btn-outline-secondary">
+                        <i class="bi bi-server"></i>
+                        View Resources
+                    </a>
+                    <a href="/results" class="btn btn-outline-secondary">
+                        <i class="bi bi-table"></i>
+                        View Results
+                    </a>
+                    <button class="btn btn-outline-info" onclick="refreshPricing()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Refresh Pricing
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Recent Activity
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="loadBoQHistory()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="recentActivity">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading recent activity...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row mt-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    System Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Features</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Real-time GCP pricing</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Multiple pricing models</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Automatic discount calculations</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Scheduled pricing updates</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Supported Resources</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-server text-primary"></i> Compute Engine instances</li>
+                            <li><i class="bi bi-hdd text-primary"></i> Persistent disks</li>
+                            <li><i class="bi bi-gpu-card text-primary"></i> GPUs (optional)</li>
+                            <li><i class="bi bi-network-wired text-primary"></i> Network resources</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadBoQHistory();
+});
+
+function loadBoQHistory() {
+    fetch('/api/boq-history?days=7')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayBoQHistory(data.data);
+            } else {
+                displayError('Failed to load recent activity');
+            }
+        })
+        .catch(error => {
+            displayError('Error loading recent activity: ' + error.message);
+        });
+}
+
+function displayBoQHistory(history) {
+    const container = document.getElementById('recentActivity');
+    
+    if (history.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <p class="text-muted mt-2">No recent activity</p>
+                <a href="/calculate" class="btn btn-primary">Calculate Your First BoQ</a>
+            </div>
+        `;
+        return;
+    }
+    
+    const historyHTML = history.map(item => `
+        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+            <div>
+                <div class="fw-bold">${formatDate(item.date)}</div>
+                <small class="text-muted">
+                    ${item.calculations} calculation(s), ${item.total_resources} resource(s)
+                </small>
+            </div>
+            <div class="text-end">
+                <div class="fw-bold text-success">${formatCurrency(item.total_cost)}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = historyHTML;
+}
+
+function displayError(message) {
+    const container = document.getElementById('recentActivity');
+    container.innerHTML = `
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            ${message}
+        </div>
+    `;
+}
+</script> 

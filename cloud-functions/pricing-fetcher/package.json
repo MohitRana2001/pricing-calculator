@@ -1,0 +1,20 @@
+{
+  "name": "gcp-pricing-fetcher",
+  "version": "1.0.0",
+  "description": "Cloud Function to fetch GCP pricing from Cloud Billing API",
+  "main": "index.js",
+  "scripts": {
+    "start": "functions-framework --target=fetchPricing",
+    "deploy": "gcloud functions deploy fetchPricing --runtime nodejs18 --trigger-http --allow-unauthenticated --memory 256MB --timeout 60s"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "@google-cloud/billing": "^4.0.0",
+    "@google-cloud/bigquery": "^6.0.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": "18"
+  }
+} 

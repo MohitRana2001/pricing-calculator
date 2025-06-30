@@ -1,0 +1,239 @@
+# GCP Automated BoQ Generation System Configuration
+
+# Project Configuration
+project:
+  id: "${GCP_PROJECT}" # Your GCP Project ID
+  region: "us-central1" # Primary deployment region
+  billing_account: "" # Optional: Billing account ID for pricing API
+
+# BigQuery Configuration
+bigquery:
+  dataset_id: "boq_dataset"
+  location: "US"
+  tables:
+    resource_specifications: "gcp_resource_specifications"
+    boq_results: "gcp_boq_results"
+    pricing_catalog: "gcp_pricing_catalog"
+
+# Cloud Functions Configuration
+cloud_functions:
+  pricing_fetcher:
+    name: "fetchPricing"
+    memory: "256MB"
+    timeout: "60s"
+    runtime: "nodejs18"
+
+  boq_calculator:
+    name: "calculateBoQ"
+    memory: "512MB"
+    timeout: "300s"
+    runtime: "nodejs18"
+
+  pricing_updater:
+    name: "updatePricingCatalog"
+    memory: "512MB"
+    timeout: "540s"
+    runtime: "nodejs18"
+
+# Cloud Run Configuration
+cloud_run:
+  service_name: "boq-web-app"
+  memory: "1Gi"
+  cpu: "1"
+  max_instances: 10
+  timeout: "300s"
+
+# Cloud Scheduler Configuration
+scheduler:
+  pricing_update:
+    name: "pricing-daily-update"
+    schedule: "0 2 * * *" # Daily at 2 AM UTC
+    description: "Daily pricing catalog update"
+
+# Service Account Configuration
+service_account:
+  name: "boq-system-sa"
+  display_name: "BoQ System Service Account"
+  roles:
+    - "roles/billing.viewer"
+    - "roles/bigquery.dataEditor"
+    - "roles/bigquery.jobUser"
+
+# Pub/Sub Configuration
+pubsub:
+  pricing_update_topic: "pricing-update-topic"
+
+# Security Configuration
+security:
+  # For production, set these to appropriate values
+  cors_origins: ["*"] # Restrict in production
+  rate_limit:
+    window_ms: 900000 # 15 minutes
+    max_requests: 100
+
+# Pricing Configuration
+pricing:
+  # GCP Service IDs for billing API
+  service_ids:
+    compute_engine: "6F81-5844-456A"
+    cloud_storage: "95FF-2EF5-5EA1"
+    bigquery: "24E6-581D-38E5"
+
+  # Discount rates (approximate)
+  discounts:
+    spot_vm: 60 # Up to 60% discount
+    cud_1_year: 25 # 25% discount for 1-year CUD
+    cud_3_year: 37 # 37% discount for 3-year CUD
+    max_sud: 30 # Maximum SUD discount
+
+  # Fallback pricing (USD, approximate)
+  fallback_prices:
+    compute:
+      n1_standard_vcpu_hour: 0.0475
+      memory_gb_hour: 0.0063
+    storage:
+      pd_standard_gb_month: 0.04
+      pd_balanced_gb_month: 0.10
+      pd_ssd_gb_month: 0.17
+    network:
+      external_ip_hour: 0.004
+      premium_egress_gb: 0.12
+      standard_egress_gb: 0.08
+
+# Environment Variables for Deployment
+environment_variables:
+  production:
+    NODE_ENV: "production"
+    LOG_LEVEL: "info"
+    SESSION_SECRET: "change-in-production"
+
+  development:
+    NODE_ENV: "development"
+    LOG_LEVEL: "debug"
+
+  staging:
+    NODE_ENV: "staging"
+    LOG_LEVEL: "info"
+
+# Feature Flags
+features:
+  enable_gpu_pricing: true
+  enable_commitment_discounts: true
+  enable_sustained_use_discounts: true
+  enable_spot_pricing: true
+  enable_network_pricing: true
+  enable_storage_pricing: true
+  enable_pricing_cache: true
+  cache_ttl_hours: 24
+
+# Monitoring and Alerting
+monitoring:
+  metrics:
+    - "function_executions"
+    - "function_duration"
+    - "bigquery_slot_usage"
+    - "pricing_api_calls"
+
+  alerts:
+    function_error_rate_threshold: 0.05 # 5%
+    function_duration_threshold: 60000 # 60 seconds
+    pricing_api_failure_threshold: 0.10 # 10%
+
+# Data Retention
+data_retention:
+  pricing_catalog_days: 90
+  boq_results_days: 365
+  audit_logs_days: 30
+
+# Regional Configuration
+regions:
+  primary: "us-central1"
+  secondary: "us-east1"
+
+  # Supported regions for pricing
+  supported:
+    - "us-central1"
+    - "us-east1"
+    - "us-west1"
+    - "europe-west1"
+    - "asia-southeast1"
+    - "asia-northeast1"
+
+# Machine Type Families
+machine_families:
+  general_purpose:
+    - "n1"
+    - "n2"
+    - "n2d"
+    - "e2"
+
+  compute_optimized:
+    - "c2"
+    - "c2d"
+
+  memory_optimized:
+    - "m1"
+    - "m2"
+
+  accelerator_optimized:
+    - "a2"
+
+# Storage Types
+storage_types:
+  - name: "pd-standard"
+    description: "Standard persistent disk"
+    performance_tier: "standard"
+
+  - name: "pd-balanced"
+    description: "Balanced persistent disk"
+    performance_tier: "balanced"
+
+  - name: "pd-ssd"
+    description: "SSD persistent disk"
+    performance_tier: "high"
+
+# GPU Types
+gpu_types:
+  - name: "nvidia-tesla-v100"
+    description: "NVIDIA Tesla V100"
+    memory_gb: 16
+
+  - name: "nvidia-tesla-t4"
+    description: "NVIDIA Tesla T4"
+    memory_gb: 16
+
+  - name: "nvidia-tesla-p100"
+    description: "NVIDIA Tesla P100"
+    memory_gb: 16
+
+# Usage Patterns
+usage_patterns:
+  - name: "continuous"
+    description: "24/7 operation"
+    availability_requirement: 0.99
+
+  - name: "intermittent"
+    description: "Periodic usage"
+    availability_requirement: 0.95
+
+  - name: "scheduled"
+    description: "Scheduled batch jobs"
+    availability_requirement: 0.90
+
+# Cost Center Mapping
+cost_centers:
+  - name: "engineering"
+    description: "Engineering and development"
+    budget_threshold: 10000
+
+  - name: "data-analytics"
+    description: "Data analytics and ML"
+    budget_threshold: 15000
+
+  - name: "platform"
+    description: "Platform and infrastructure"
+    budget_threshold: 8000
+
+  - name: "research"
+    description: "Research and experimentation"
+    budget_threshold: 5000

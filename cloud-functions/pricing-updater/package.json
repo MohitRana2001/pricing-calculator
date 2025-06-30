@@ -1,0 +1,19 @@
+{
+  "name": "gcp-pricing-updater",
+  "version": "1.0.0",
+  "description": "Scheduled Cloud Function to update GCP pricing catalog",
+  "main": "index.js",
+  "scripts": {
+    "start": "functions-framework --target=updatePricingCatalog",
+    "deploy": "gcloud functions deploy updatePricingCatalog --runtime nodejs18 --trigger-topic pricing-update-topic --memory 512MB --timeout 540s"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "@google-cloud/billing": "^4.0.0",
+    "@google-cloud/bigquery": "^6.0.0",
+    "@google-cloud/pubsub": "^3.0.0"
+  },
+  "engines": {
+    "node": "18"
+  }
+} 
